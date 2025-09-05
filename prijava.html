@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="css/prijava.css" />
+  <title>Sign Up</title>
+</head>
+<body>
+  <div id="page">
+    <form id="signupForm">
+      <div id="reg-box">
+        <div class="title">
+          <img class="logo" src="slike/output-onlinepngtools.png" alt="" />
+          Sign Up
+        </div>
+
+        <div id="reg">
+          <input id="email" type="email" placeholder="Email" required />
+          <br /><br />
+
+          <input id="korisnicko_ime" type="text" placeholder="User Name" required pattern="[A-Za-z0-9]{3,10}" title="3-10 alphanumeric characters" />
+          <br /><br />
+
+          <input type="password" id="lozinka" placeholder="Password" required />
+          <br />
+
+          <button class="submitButton" type="submit">Create Account</button>
+
+         <div class="links">
+
+
+  <button class="googleLink" type="button">
+    <img class="googleLogo" src="slike/7123025_logo_google_g_icon.png" alt="Google logo" />
+    Sign up With Google
+  </button>
+</div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+    const firebaseConfig = {
+      apiKey: "AIzaSyAlPTVvP5rzT5roLZ1ZH2jx1T3rWoWkkxc",
+      authDomain: "theweatherthebetterproj.firebaseapp.com",
+      databaseURL: "https://theweatherthebetterproj-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "theweatherthebetterproj",
+      storageBucket: "theweatherthebetterproj.appspot.com",
+      messagingSenderId: "382904854538",
+      appId: "1:382904854538:web:7b60d55776b44db61cd7f3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    const form = document.getElementById("signupForm");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const username = document.getElementById("korisnicko_ime").value;
+      const password = document.getElementById("lozinka").value;
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Create user in DB with empty locations
+        await set(ref(db, "users/" + user.uid), {
+          username,
+          email,
+          locations: {} // ✅ important
+        });
+
+        alert("Account created!");
+        form.reset();
+        window.location.href = "wthrapp02.html";
+
+      } catch (error) {
+        alert("Error: " + error.message);
+      }
+    });
+
+
+    // Google sign up
+document.querySelector(".googleLink").addEventListener("click", async () => {
+  const provider = new GoogleAuthProvider();
+  try {
+    await signInWithPopup(auth, provider);
+    window.location.href = "wthrapp02.html";
+  } catch (error) {
+    alert("Google signup failed: " + error.message);
+  }
+});
+
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>theWeatherTheBetter</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="css/wthrapp2.css"/>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <a href="#home" class="active">
+        <img class="logo" src="slike/output-onlinepngtools.png" alt="logo" />
+      </a>
+      <p class="slogo">theWeatherTheBetter</p>
+    </div>
+
+    <nav id="myLinks" class="links">
+      <a id="link1" href="prijava.html">Create account</a>
+      <a id="link2" href="login.html">Login</a>
+      <a id="logoutLink" href="#" style="display:none">Logout</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="search-card">
+      <div class="search-wrap">
+        <input type="text" id="searchInput" placeholder="Search places in Croatia…" autocomplete="off" />
+        <ul id="suggestions"></ul>
+      </div>
+      <button id="saveLocationBtn" class="btn btn-primary">Save Location</button>
+    </section>
+
+    <section class="map-wrap">
+      <div id="map" class="map"></div>
+      <button id="moreBtn" class="btn btn-ghost">More</button>
+      <div id="modalOverlay" class="modal-overlay">
+  <div class="modal-window">
+    <button class="modal-close">&times;</button>
+   <div id="modalContent"></div>
+  </div>
+</div>
+    </section>
+
+    <section class="panels">
+      <div id="weatherInfo" class="weather-box card"></div>
+
+      <!-- renamed wrapper to avoid duplicate #weatherInfo -->
+      <div id="weatherInfoPanel" class="card">
+        <div id="weatherInfo2"></div>
+      </div>
+    </section>
+
+    <section id="savedLocations" class="card">
+      <h3>Saved Locations</h3>
+      <ul id="savedLocationsList" class="saved-list"></ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <small>© theWeatherTheBetter</small>
+  </footer>
+
+  <script src="js/wthrapp02.js" type="module"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+</body>
+</html>
