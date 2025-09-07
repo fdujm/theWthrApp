@@ -309,10 +309,7 @@ saveBtn.addEventListener("click", async () => {
       const popupContent = `
         <b>${name}</b><br>
         🌡️ Temp: ${w.temperature}°C<br>
-        💨 Wind: ${w.windspeed} km/h<br>
         🌧️ Precipitation: ${precipitation} mm<br>
-        🌞 UV Index: ${uv} ${uvRecommendation(uv)}<br>
-        <b>Recommendation:</b> ${rec}
       `;     
 
       lastMarker = L.marker([lat, lon])
@@ -331,17 +328,19 @@ saveBtn.addEventListener("click", async () => {
 //----------------------------
 //  7 DNEVNA I PO SATU PROGNOZA
 //----------------------------
-
+//po satu
   function dailyProg(data, hIdx = 0){
         let html =""
        html += `<h5>Prognoza po satima</h5><div style="display:flex; gap:10px; overflow-x:auto;">`;
      for (let i = hIdx; i < Math.min(hIdx + 12, data.hourly.time.length); i++) {
      if (!data.hourly.time[i]) continue; // safety check
             html += `
-        <div style="text-align:center; min-width:80px;">
+        <div class="wthrbox">
+        <br>
           <div><strong>${data.hourly.time[i].slice(11, 16)}</strong></div>
-          <div>${(data.hourly.weathercode[i])}</div>
           <div>${data.hourly.temperature_2m[i]}°C</div>
+          <div>${data.hourly.precipitation[i]}mm</div>
+          <br>
         </div>
       `;
         }
@@ -354,10 +353,12 @@ saveBtn.addEventListener("click", async () => {
                 weekday: 'short'
             });
             html += `
-        <div style="text-align:center; min-width:80px;">
+        <div class="wthrbox" >
+        <br>
           <div><strong>${day}</strong></div>
-          <div>${(data.daily.weathercode[i])}</div>
           <div>${data.daily.temperature_2m_min[i]}°C / ${data.daily.temperature_2m_max[i]}°C</div>
+          <div>${data.daily.precipitation_sum[i]}mm</div>
+          <br>
         </div>
           
 

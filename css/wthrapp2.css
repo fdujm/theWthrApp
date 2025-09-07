@@ -408,3 +408,13 @@ cursor: pointer; }
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+
+.wthrbox{
+  border: 1px solid var(--text-on-dark);
+  border-radius: 18px;
+  text-align:center ;
+  min-height: 80px;
+  min-width: 80px;
+
+}
