@@ -1,10 +1,9 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAlPTVvP5rzT5roLZ1ZH2jx1T3rWoWkkxc",
   authDomain: "theweatherthebetterproj.firebaseapp.com",
-  databaseURL: "https://theweatherthebetterproj-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "theweatherthebetterproj",
   storageBucket: "theweatherthebetterproj.appspot.com",
   messagingSenderId: "382904854538",
@@ -14,26 +13,29 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-const loginBtn = document.getElementById("loginBtn");
-const errorMsg = document.getElementById("errorMsg");
-
-loginBtn.addEventListener("click", async () => {
-  errorMsg.textContent = ""; // clear previous errors
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-
-  if (!email || !password) {
-    errorMsg.textContent = "Please enter both email and password.";
-    return;
-  }
+// Email/password login
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
 
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    console.log("Logged in as:", userCredential.user.email);
-    // Redirect to main app page
+    await signInWithEmailAndPassword(auth, email, password);
+    alert("Login successful!");
     window.location.href = "wthrapp2.html";
   } catch (error) {
-    errorMsg.textContent = error.message;
-    console.error(error);
+    alert("Error: " + error.message);
+  }
+});
+
+// Google login
+document.getElementById("googleLogin").addEventListener("click", async () => {
+  const provider = new GoogleAuthProvider();
+  try {
+    await signInWithPopup(auth, provider);
+    window.location.href = "wthrapp2.html";
+  } catch (error) {
+    console.error("Google login error:", error);
+    alert("Google login failed: " + error.message);
   }
 });

@@ -26,8 +26,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const link1 = document.getElementById("link1");
   const link2 = document.getElementById("link2");
-  const link3 = document.getElementById("link3");
-  const link4 = document.getElementById("link4");
+  // const link3 = document.getElementById("link3");
+  // const link4 = document.getElementById("link4");
   const logoutLink = document.getElementById("logoutLink");
 
   let map = L.map("map").setView([45.8, 15.9], 8);
