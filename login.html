@@ -38,9 +38,9 @@
                      <div class="links">
 
 
-  <button class="googleLink" type="button">
+  <button id="googleLogin" class="googleLink" type="button">
     <img class="googleLogo" src="slike/7123025_logo_google_g_icon.png" alt="Google logo" />
-    Sign up With Google
+    Login up With Google
   </button>
 </div>
           </div>
@@ -50,47 +50,45 @@
   </div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvder } 
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    const firebaseConfig = {
-      apiKey: "AIzaSyAlPTVvP5rzT5roLZ1ZH2jx1T3rWoWkkxc",
-      authDomain: "theweatherthebetterproj.firebaseapp.com",
-      projectId: "theweatherthebetterproj",
-      storageBucket: "theweatherthebetterproj.appspot.com",
-      messagingSenderId: "382904854538",
-      appId: "1:382904854538:web:7b60d55776b44db61cd7f3"
-    };
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+const firebaseConfig = {
+  apiKey: "AIzaSyAlPTVvP5rzT5roLZ1ZH2jx1T3rWoWkkxc",
+  authDomain: "theweatherthebetterproj.firebaseapp.com",
+  projectId: "theweatherthebetterproj",
+  storageBucket: "theweatherthebetterproj.appspot.com",
+  messagingSenderId: "382904854538",
+  appId: "1:382904854538:web:7b60d55776b44db61cd7f3"
+};
 
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-      const email = document.getElementById("loginEmail").value;
-      const password = document.getElementById("loginPassword").value;
+// Email/password login
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
 
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        alert("Login successful!");
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    alert("Login successful!");
+    window.location.href = "wthrapp2.html";
+  } catch (error) {
+    alert("Error: " + error.message);
+  }
+});
 
-        // Redirect to main app page after popup
-        window.location.href = "wthrapp2.html";
-      } catch (error) {
-        alert("Error: " + error.message);
-      }
-    });
-
-    // Google
+// Google login
 document.getElementById("googleLogin").addEventListener("click", async () => {
   const provider = new GoogleAuthProvider();
   try {
     await signInWithPopup(auth, provider);
-    window.location.href = "index.html"; // back to app
+    window.location.href = "wthrapp2.html";
   } catch (error) {
     console.error("Google login error:", error);
+    alert("Google login failed: " + error.message);
   }
 });
 
