@@ -26,8 +26,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const link1 = document.getElementById("link1");
   const link2 = document.getElementById("link2");
-  // const link3 = document.getElementById("link3");
-  // const link4 = document.getElementById("link4");
   const logoutLink = document.getElementById("logoutLink");
 
   let map = L.map("map").setView([45.8, 15.9], 8);
@@ -41,7 +39,7 @@ window.addEventListener("DOMContentLoaded", () => {
   // ------------------------
   // AUTH STATE
   // ------------------------
-onAuthStateChanged(auth, async (user) => {
+onAuthStateChanged(auth, async (user) => {//aktivira se kada je auth state promijenjen tj kad se loada stranica
   if (user) {
     console.log("Logged in as:", user.email);
     link1.style.display = "none"
@@ -124,6 +122,7 @@ function renderSavedLocations(locationsObj) {
     // Rename button
     li.querySelector(".renameBtn").addEventListener("click", async (e) => {
       e.stopPropagation();
+      //pomocu prompta mijenjamo ime
       const newName = prompt("Enter a new name for this location:", loc.name || "");
       if (!newName || newName.trim() === "") return;
 
@@ -131,8 +130,8 @@ function renderSavedLocations(locationsObj) {
       if (!user) return;
 
       // Update in Firebase
-      await set(ref(db, `users/${user.uid}/locations/${id}`), {
-        ...loc,
+      await set(ref(db, `users/${user.uid}/locations/${id}`), {//set(ref())overwrites data
+        ...loc,//siri svojstva iz starog objekta u novi
         name: newName
       });
 
@@ -156,7 +155,7 @@ searchInput.addEventListener("input", () => {
   const query = searchInput.value.trim();
   
   // Clear previous timeout
-  if (searchTimeout) clearTimeout(searchTimeout);
+  if (searchTimeout) clearTimeout(searchTimeout);    //timeout da se ne spamma api
 
   if (query.length < 3) {
     suggestionsList.innerHTML = "";
@@ -180,7 +179,7 @@ searchInput.addEventListener("input", () => {
              suggestionsList.style.display = "block"
 
         const item = document.createElement("li");
-        item.textContent = result.formatted;
+        item.textContent = result.formatted;//jer open cage vraca formatted
         item.style.cursor = "pointer";
 
         item.addEventListener("click", async () => {
@@ -285,18 +284,19 @@ saveBtn.addEventListener("click", async () => {
   }
 });
 
+
   // ------------------------
   // WEATHER
   // ------------------------
   let lastWeatherData = null; 
 
   async function fetchWeather(lat, lon, name) {
-    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,precipitation,weathercode,windspeed_10m,uv_index&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode&timezone=auto`;
+const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,precipitation,weathercode,windspeed_10m,uv_index&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode,sunrise,sunset&timezone=auto`;
     try {
       const res = await fetch(weatherUrl);
       const data = await res.json();
       lastWeatherData = data; //globalno spremimo podatke za more btn
-      displayWeather(data, name);
+      displayWeather(data, name, data.daily);
 
       if (lastMarker) map.removeLayer(lastMarker);
       const w = data.current_weather;
@@ -371,7 +371,7 @@ return html; // return the finished string
 
   }
 
-  function displayWeather(data, name) {
+  function displayWeather(data, name, daily) {
     if (!data.current_weather) {
       weatherInfoDiv.innerHTML = "Weather data unavailable.";
       return;
@@ -383,16 +383,19 @@ return html; // return the finished string
     let precipitation = hourIndex !== -1 ? data.hourly.precipitation[hourIndex] : "N/A";
     const rec = getRecommendation(w.weathercode);
 
+  const sunrise = new Date(daily.sunrise[0]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const sunset = new Date(daily.sunset[0]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
     weatherInfoDiv.innerHTML = `
       <b>${name}</b><br>
       🌡️ Temp: ${w.temperature}°C<br>
       💨 Wind: ${w.windspeed} km/h<br>
       🌧️ Precipitation: ${precipitation} mm<br>
       🌞 UV Index: ${uv} ${uvRecommendation(uv)}<br>
-      <b>Recommendation:</b> ${rec}
+      🌅 Sunrise: ${sunrise}<br>
+      🌇 Sunset: ${sunset}<br>
+          <b>Recommendation:</b> ${rec}
     `;
-    // weatherInfo2.innerHTML = "";
-    // weatherInfo2.innerHTML += dailyProg(data);
  
   }
 
@@ -452,3 +455,5 @@ modalOverlay.addEventListener("click", (e) => {
  
   }
 });
+
+

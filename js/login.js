@@ -39,3 +39,5 @@ document.getElementById("googleLogin").addEventListener("click", async () => {
     alert("Google login failed: " + error.message);
   }
 });
+
+
