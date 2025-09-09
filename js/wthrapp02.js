@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -27,6 +27,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const link1 = document.getElementById("link1");
   const link2 = document.getElementById("link2");
   const logoutLink = document.getElementById("logoutLink");
+  const dropdown = document.getElementById("accountDropdown");
 
   let map = L.map("map").setView([45.8, 15.9], 8);
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -35,6 +36,29 @@ window.addEventListener("DOMContentLoaded", () => {
 
   let lastMarker = null;
   let currentLocation = null;
+  const deleteAcc = document.getElementById("deleteAccount");
+deleteAcc.addEventListener("click",deleteAccount);
+
+//del acc
+function deleteAccount() {
+  const user = auth.currentUser;
+  if (user) {
+    if (confirm("Are you sure you want to permanently delete your account?")) {
+      deleteUser(user)
+        .then(() => {
+          alert("Your account has been deleted.");
+          window.location.href = "wthrapp02.html";
+        })
+        .catch((error) => {
+          console.error("Error deleting account:", error);
+          alert("Failed to delete account: " + error.message);
+        });
+    }
+  } else {
+    alert("No user is signed in.");
+  }
+}
+
 
   // ------------------------
   // AUTH STATE
@@ -42,11 +66,11 @@ window.addEventListener("DOMContentLoaded", () => {
 onAuthStateChanged(auth, async (user) => {//aktivira se kada je auth state promijenjen tj kad se loada stranica
   if (user) {
     console.log("Logged in as:", user.email);
-    link1.style.display = "none"
     link2.style.display = "none"
 
     logoutLink.textContent = "Logout";
     logoutLink.style.display = "inline-block";
+    dropdown.style.display = "inline-block"
 
     // Load saved locations
     const snapshot = await get(ref(db, "users/" + user.uid + "/locations"));
@@ -58,6 +82,7 @@ onAuthStateChanged(auth, async (user) => {//aktivira se kada je auth state promi
 
     logoutLink.textContent = "Sign Up";
     logoutLink.style.display = "inline-block"; // keep visible, but acts differently
+    logoutLink.window.href = "prijava.html"
   }
 });
 
@@ -65,11 +90,9 @@ logoutLink.addEventListener("click", async (e) => {
   e.preventDefault();
 
   if (auth.currentUser) {
-    // If logged in → sign out
     await signOut(auth);
     window.location.href = "login.html";
   } else {
-    // If not logged in → go to Sign Up
     window.location.href = "prijava.html";
   }
 });
@@ -112,7 +135,7 @@ function renderSavedLocations(locationsObj) {
 
     // Delete button
     li.querySelector(".deleteBtn").addEventListener("click", async (e) => {
-      e.stopPropagation(); //sprjecava aktivaciju radi parent elemenata
+      e.stopPropagation(); //sprjecava aktivaciju(bubbling?) radi parent elemenata
       const user = auth.currentUser;
       if (!user) return;
       await set(ref(db, `users/${user.uid}/locations/${id}`), null);
@@ -182,20 +205,34 @@ searchInput.addEventListener("input", () => {
         item.textContent = result.formatted;//jer open cage vraca formatted
         item.style.cursor = "pointer";
 
-        item.addEventListener("click", async () => {
-         suggestionsList.style.display = "none"
+item.addEventListener("click", async () => {
+    // Hide suggestions
+    suggestionsList.style.display = "none";
 
-          const lat = result.geometry.lat;
-          const lon = result.geometry.lng;
-          const name = result.formatted;
-          currentLocation = { name, lat, lon };
+    const lat = result.geometry.lat;
+    const lon = result.geometry.lng;
+    const name = result.formatted;
+    currentLocation = { name, lat, lon };
 
-          map.setView([lat, lon], 13);
-          await fetchWeather(lat, lon, name);
+    // Pan map
+    map.setView([lat, lon], 13);
 
-          suggestionsList.innerHTML = "";
-          searchInput.value = "";
-        });
+    // Fetch weather
+    await fetchWeather(lat, lon, name);
+
+    // Clear input & suggestions
+    suggestionsList.innerHTML = "";
+    searchInput.value = "";
+
+    // Show panels
+    weatherInfoDiv.style.display = "block";
+    weatherInfoPanel.style.display = "block";
+
+// Call daily forecast function and show dailyProg container
+if (lastWeatherData) {
+  weatherInfo2.innerHTML = dailyProg(lastWeatherData);
+}
+});
 
         suggestionsList.appendChild(item);
       });
@@ -455,5 +492,4 @@ modalOverlay.addEventListener("click", (e) => {
  
   }
 });
-
 

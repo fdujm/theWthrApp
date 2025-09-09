@@ -20,9 +20,15 @@
     </div>
 
     <nav id="myLinks" class="links">
-      <a id="link1" href="prijava.html">Create account</a>
       <a id="link2" href="login.html">Login</a>
       <a id="logoutLink" href="#" style="display:none">Logout</a>
+
+    <div class="account-dropdown" id="accountDropdown" style="display:none;">
+      <button class="account-btn">Account </button>
+       <div class="account-menu">
+    
+        <a id="deleteAccount" href="#" onclick="deleteAccount()">Delete Account</a>
+   </div>
     </nav>
   </header>
 
